@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 class Method_MLP(method, nn.Module):
     data = None
     # it defines the max rounds to train the model
-    max_epoch = 100
+    max_epoch = 150
     # it defines the learning rate for gradient descent based optimizer for model learning
     learning_rate = 1e-3
 
@@ -27,10 +27,10 @@ class Method_MLP(method, nn.Module):
         method.__init__(self, mName, mDescription)
         nn.Module.__init__(self)
         # check here for nn.Linear doc: https://pytorch.org/docs/stable/generated/torch.nn.Linear.html
-        self.fc_layer_1 = nn.Linear(784, 300)
+        self.fc_layer_1 = nn.Linear(784, 200)
         # check here for nn.ReLU doc: https://pytorch.org/docs/stable/generated/torch.nn.ReLU.html
-        self.activation_func_1 = nn.ReLU()
-        self.fc_layer_2 = nn.Linear(300, 10)
+        self.activation_func_1 = nn.Sigmoid()
+        self.fc_layer_2 = nn.Linear(200, 10)
         # check here for nn.Softmax doc: https://pytorch.org/docs/stable/generated/torch.nn.Softmax.html
         self.activation_func_2 = nn.Softmax(dim=1)
 
