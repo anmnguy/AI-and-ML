@@ -9,17 +9,29 @@ from code.base_class.method import method
 from code.stage_3_code.Evaluate_Accuracy import Evaluate_Accuracy
 import torch
 from torch import nn
+import torchvision.transforms
 import matplotlib.pyplot as plt
 
 
 class Method_CNN(method, nn.Module):
+
+    #convert data to a normalized torch.FloatTensor
+    """
+    data_transform = torchvision.transforms.Compose(
+        [torchvision.transforms.ToTensor(), torchvision.transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+        )
+    """
+    
+    #train_dir = '../../data/stage_3_data/'
+    #test_dir = '../../data/stage_3_data/'
+
     data = None
     train_loader = None
     test_loader = None
     # it defines the max rounds to train the model
     max_epoch = 10
     # it defines the learning rate for gradient descent based optimizer for model learning
-    learning_rate = 1e-3
+    learning_rate = 0.01
 
     # it defines the CNN model architecture, e.g.,
     # how many layers, size of variables in each layer, activation function, etc.
@@ -54,7 +66,7 @@ class Method_CNN(method, nn.Module):
 
     def train_(self, X, y):
         model = Method_CNN('','')
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
+        optimizer = torch.optim.SGD(self.parameters(), lr=self.learning_rate)
         loss_function = nn.CrossEntropyLoss()
         train_losses = []
         pred_y = []
