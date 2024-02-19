@@ -40,8 +40,8 @@ if 1:
     print('************ Overall Performance ************')
     print('CNN Accuracy: ', evaluations['accuracy'])
     print('CNN Precision: ', evaluations['precision'])
-    print('CNN Accuracy: ', evaluations['recall'])
-    print('CNN Accuracy: ', evaluations['f1'])
+    print('CNN Recall: ', evaluations['recall'])
+    print('CNN F1: ', evaluations['f1'])
     print('************ Finish ************')
     # ------------------------------------------------------
 
