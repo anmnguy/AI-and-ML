@@ -8,7 +8,7 @@ import numpy as np
 import torch
 import warnings
 
-# ---- Digit Recognition Convolutional Neural Network script ----
+# ---- Digit Recognition Convolutional Neural Network Script ----
 if 1:
     warnings.filterwarnings("ignore", message="Creating a tensor from a list of numpy.ndarrays is extremely slow.*")
     # ---- parameter section -------------------------------
@@ -36,13 +36,16 @@ if 1:
     print('************ Start ************')
     setting_obj.prepare(data_obj, method_obj, result_obj, evaluate_obj)
     setting_obj.print_setup_summary()
-    accuracy = setting_obj.load_run_save_evaluate()
+    evaluations = setting_obj.load_run_save_evaluate()
     print('************ Overall Performance ************')
-    print('CNN Accuracy: ', accuracy)
+    print('CNN Accuracy: ', evaluations['accuracy'])
+    print('CNN Precision: ', evaluations['precision'])
+    print('CNN Accuracy: ', evaluations['recall'])
+    print('CNN Accuracy: ', evaluations['f1'])
     print('************ Finish ************')
     # ------------------------------------------------------
 
-# ---- Facial Recognition Convolutional Neural Network script ----
+# ---- Facial Recognition Convolutional Neural Network Script ----
 if 0:
     warnings.filterwarnings("ignore", message="Creating a tensor from a list of numpy.ndarrays is extremely slow.*")
     # ---- parameter section -------------------------------
@@ -76,4 +79,36 @@ if 0:
     print('************ Finish ************')
     # ------------------------------------------------------
 
+# ---- Colored Objects Identification Convolutional Neural Network Script ----
+if 0:
+    warnings.filterwarnings("ignore", message="Creating a tensor from a list of numpy.ndarrays is extremely slow.*")
+    # ---- parameter section -------------------------------
+    np.random.seed(2)
+    torch.manual_seed(2)
+    # ------------------------------------------------------
 
+    # ---- objection initialization section ---------------
+    data_obj = Dataset_Loader('CIFAR', '')
+    data_obj.dataset_source_folder_path = '../../data/stage_3_data/'
+    data_obj.dataset_source_file_name_train = 'CIFAR'
+
+    method_obj = Method_CNN('convolutional neural network', '')
+
+    result_obj = Result_Saver('saver', '')
+    result_obj.result_destination_folder_path = '../../result/stage_3_result/CNN_'
+    result_obj.result_destination_file_name = 'prediction_result'
+
+    setting_obj = Setting_Train_Test('train test no split', '')
+
+    evaluate_obj = Evaluate_Accuracy('accuracy', '')
+    # ------------------------------------------------------
+
+    # ---- running section ---------------------------------
+    print('************ Start ************')
+    setting_obj.prepare(data_obj, method_obj, result_obj, evaluate_obj)
+    setting_obj.print_setup_summary()
+    accuracy = setting_obj.load_run_save_evaluate()
+    print('************ Overall Performance ************')
+    print('CNN Accuracy: ', accuracy)
+    print('************ Finish ************')
+    # ------------------------------------------------------
