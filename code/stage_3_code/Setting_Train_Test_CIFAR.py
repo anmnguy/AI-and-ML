@@ -9,7 +9,7 @@ from code.base_class.setting import setting
 import torch
 import numpy as np
 
-class Setting_Train_Test(setting):
+class Setting_Train_Test_CIFAR(setting):
 
     def load_run_save_evaluate(self):
 
@@ -28,8 +28,8 @@ class Setting_Train_Test(setting):
         torch_X_test = torch.from_numpy(np.asarray(X_test)).type(torch.LongTensor)
         torch_y_test = torch.from_numpy(np.asarray(y_test)).type(torch.LongTensor)  # data type is long
 
-        torch_X_train = torch_X_train.view(-1, 1, 28, 28).float()
-        torch_X_test = torch_X_test.view(-1, 1, 28, 28).float()
+        torch_X_train = torch_X_train.view(-1, 3, 32, 32).float()
+        torch_X_test = torch_X_test.view(-1, 3, 32, 32).float()
 
         # pytorch train and test sets
         train = torch.utils.data.TensorDataset(torch_X_train, torch_y_train)
@@ -43,10 +43,10 @@ class Setting_Train_Test(setting):
         self.method.data = {'train': {'X': X_train, 'y': y_train}, 'test': {'X': X_test, 'y': y_test}}
         self.method.train_loader = train_loader
         self.method.test_loader = test_loader
-        learned_result, accuracy = self.method.run()
+        learned_result, evaluations = self.method.run()
 
         # save raw ResultModule
         self.result.data = learned_result
         self.result.save()
 
-        return accuracy
+        return evaluations
