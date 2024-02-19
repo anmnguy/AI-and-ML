@@ -9,6 +9,8 @@ from code.base_class.method import method
 from code.stage_3_code.Evaluate_Accuracy import Evaluate_Accuracy
 import torch
 from torch import nn
+import torch.nn.functional as F
+from torch.autograd import Variable
 import matplotlib.pyplot as plt
 
 
@@ -37,50 +39,55 @@ class Method_CNN(method, nn.Module):
     # this function will calculate the output layer by layer
 
     def forward(self, x):
-        x = nn.functional.relu(self.conv1(x))
-        x = nn.functional.relu(nn.functional.max_pool2d(self.conv2(x), 2))
-        x = nn.functional.dropout(x, p=0.5, training=self.training)
-        x = nn.functional.relu(nn.functional.max_pool2d(self.conv3(x), 2))
-        x = nn.functional.dropout(x, p=0.5, training=self.training)
+        x = F.relu(self.conv1(x))
+        x = F.relu(F.max_pool2d(self.conv2(x), 2))
+        x = F.dropout(x, p=0.5, training=self.training)
+        x = F.relu(F.max_pool2d(self.conv3(x), 2))
+        x = F.dropout(x, p=0.5, training=self.training)
         x = x.view(-1, 3 * 3 * 64)
-        x = nn.functional.relu(self.fc1(x))
-        x = nn.functional.dropout(x, training=self.training)
+        x = F.relu(self.fc1(x))
+        x = F.dropout(x, training=self.training)
         x = self.fc2(x)
-        return nn.functional.log_softmax(x, dim=1)
+        return F.log_softmax(x, dim=1)
 
     # backward error propagation will be implemented by pytorch automatically
     # so we don't need to define the error backpropagation function here
 
-    def train_(self, X, y):
+    def train_test(self, X, y):
         model = Method_CNN('','')
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
+        # declare optimizer and loss function
+        optimizer = torch.optim.Adam(model.parameters())
         loss_function = nn.CrossEntropyLoss()
         train_losses = []
-        pred_y = []
+        y_pred = []
 
-        # Train the model
+        # train the model
         model.train()
         for epoch in range(self.max_epoch):
             correct = 0
-            for batch_idx, (images, labels) in enumerate(self.train_loader):
-                var_images = torch.autograd.Variable(images).float()
-                var_labels = torch.autograd.Variable(labels)
+            epoch_loss = 0
+            for batch_idx, (X_batch, y_batch) in enumerate(self.train_loader):
+                var_X_batch = Variable(X_batch).float()
+                var_y_batch = Variable(y_batch)
                 optimizer.zero_grad()
-                output = model(var_images)
-                loss = loss_function(output, var_labels)
+                output = model(var_X_batch)
+                loss = loss_function(output, var_y_batch)
                 loss.backward()
                 optimizer.step()
 
-                # Total correct predictions
+                # total correct predictions
                 predicted = torch.max(output.data, 1)[1]
-                correct += (predicted == var_labels).sum()
-                pred_y.extend(predicted.tolist())
-                # print(correct)
-                if batch_idx % 10000 == 0:
-                    print('Epoch:', epoch, 'Loss:', loss.item(), 'Accuracy:', float(correct) / float(1 * (batch_idx + 1)))
-            train_losses.append(loss.item())
+                correct += (predicted == var_y_batch).sum()
+                epoch_loss += loss.item()
+                y_pred.extend(predicted.tolist())
 
-        pred_y = torch.tensor(pred_y)
+                if batch_idx % 50 == 0:
+                    print('Epoch : {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\t Accuracy:{:.3f}%'.format(
+                        epoch, batch_idx * len(X_batch), len(self.train_loader.dataset),
+                               100. * batch_idx / len(self.train_loader), loss.data.item(),
+                               float(correct * 100) / float(32 * (batch_idx + 1))))
+
+            train_losses.append(epoch_loss / len(self.train_loader))
 
         # plot the training convergence
         plt.plot(range(self.max_epoch), train_losses)
@@ -89,15 +96,14 @@ class Method_CNN(method, nn.Module):
         plt.title('Training Convergence Plot')
         plt.show()
 
-        accuracy_evaluator = Evaluate_Accuracy('training evaluator', '')
-        accuracy_evaluator.test_loader = self.test_loader
-        accuracy_evaluator.model = model
-        accuracy = accuracy_evaluator.evaluate()
-
-        return pred_y, accuracy
+        return y_pred, model
 
     def run(self):
         print('method running...')
         print('--start training and testing...')
-        pred_y, accuracy = self.train_(self.data['train']['X'], self.data['train']['y'])
-        return {'pred_y': pred_y, 'true_y': self.data['test']['y']}, accuracy
+        y_pred, model = self.train_test(self.data['train']['X'], self.data['train']['y'])
+        accuracy_evaluator = Evaluate_Accuracy('training evaluator', '')
+        accuracy_evaluator.model = model
+        accuracy_evaluator.test_loader = self.test_loader
+        accuracy = accuracy_evaluator.evaluate()
+        return {'pred_y': y_pred, 'true_y': self.data['test']['y']}, accuracy

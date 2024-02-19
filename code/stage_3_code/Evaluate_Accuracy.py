@@ -7,6 +7,7 @@ Concrete Evaluate class for a specific evaluation metrics
 
 from code.base_class.evaluate import evaluate
 import torch
+from torch.autograd import Variable
 
 
 class Evaluate_Accuracy(evaluate):
@@ -16,12 +17,10 @@ class Evaluate_Accuracy(evaluate):
     
     def evaluate(self):
         correct = 0
-        total = 0
-        for batch_idx, (test_images, test_labels) in enumerate(self.test_loader):
-            test_images = torch.autograd.Variable(test_images).float()
-            output = self.model(test_images)
+        for images, labels in self.test_loader:
+            images = Variable(images).float()
+            output = self.model(images)
             predicted = torch.max(output, 1)[1]
-            correct += (predicted == test_labels).sum().item()
-            total += test_labels.size(0)
-
-        return correct / total
+            correct += (predicted == labels).sum()
+        accuracy = float(correct) / (len(self.test_loader) * 32)
+        return accuracy

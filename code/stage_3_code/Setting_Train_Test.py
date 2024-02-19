@@ -19,22 +19,25 @@ class Setting_Train_Test(setting):
         X_train, y_train = loaded_data['X_train'], loaded_data['y_train']
         X_test, y_test = loaded_data['X_test'], loaded_data['y_test']
 
-        # normalize dataset
-        X_train_np = np.array(X_train)
-        X_test_np = np.array(X_test)
-        X_train_normalized = X_train_np / 255.0
-        X_test_normalized = X_test_np / 255.0
+        BATCH_SIZE = 32
 
-        X_train_tensor = torch.tensor(X_train_normalized, dtype=torch.float32)
-        y_train_tensor = torch.tensor(y_train, dtype=torch.int64)
-        X_test_tensor = torch.tensor(X_test_normalized, dtype=torch.float32)
-        y_test_tensor = torch.tensor(y_test, dtype=torch.int64)
+        # convert data to tensor
+        torch_X_train = torch.from_numpy(np.asarray(X_train)).type(torch.LongTensor)
+        torch_y_train = torch.from_numpy(np.asarray(y_train)).type(torch.LongTensor)  # data type is long
 
-        train_dataset = torch.utils.data.TensorDataset(X_train_tensor, y_train_tensor)
-        test_dataset = torch.utils.data.TensorDataset(X_test_tensor, y_test_tensor)
+        torch_X_test = torch.from_numpy(np.asarray(X_test)).type(torch.LongTensor)
+        torch_y_test = torch.from_numpy(np.asarray(y_test)).type(torch.LongTensor)  # data type is long
 
-        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=1, shuffle=False)
-        test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False)
+        torch_X_train = torch_X_train.view(-1, 1, 28, 28).float()
+        torch_X_test = torch_X_test.view(-1, 1, 28, 28).float()
+
+        # pytorch train and test sets
+        train = torch.utils.data.TensorDataset(torch_X_train, torch_y_train)
+        test = torch.utils.data.TensorDataset(torch_X_test, torch_y_test)
+
+        # data loader
+        train_loader = torch.utils.data.DataLoader(train, batch_size=BATCH_SIZE, shuffle=False)
+        test_loader = torch.utils.data.DataLoader(test, batch_size=BATCH_SIZE, shuffle=False)
 
         # run MethodModule
         self.method.data = {'train': {'X': X_train, 'y': y_train}, 'test': {'X': X_test, 'y': y_test}}
