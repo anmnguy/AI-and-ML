@@ -14,7 +14,7 @@ from torch.autograd import Variable
 import matplotlib.pyplot as plt
 
 
-class Method_CNN(method, nn.Module):
+class Method_CNN_MNIST(method, nn.Module):
     data = None
     train_loader = None
     test_loader = None
@@ -28,7 +28,7 @@ class Method_CNN(method, nn.Module):
     def __init__(self, mName, mDescription):
         method.__init__(self, mName, mDescription)
         nn.Module.__init__(self)
-        super(Method_CNN, self).__init__()
+        super(Method_CNN_MNIST, self).__init__()
         self.conv1 = nn.Conv2d(1, 32, kernel_size=5)
         self.conv2 = nn.Conv2d(32, 32, kernel_size=5)
         self.conv3 = nn.Conv2d(32, 64, kernel_size=5)
@@ -54,7 +54,7 @@ class Method_CNN(method, nn.Module):
     # so we don't need to define the error backpropagation function here
 
     def train_test(self, X, y):
-        model = Method_CNN('','')
+        model = Method_CNN_MNIST('', '')
         # declare optimizer and loss function
         optimizer = torch.optim.Adam(model.parameters())
         loss_function = nn.CrossEntropyLoss()
@@ -105,5 +105,5 @@ class Method_CNN(method, nn.Module):
         accuracy_evaluator = Evaluate_Accuracy('training evaluator', '')
         accuracy_evaluator.model = model
         accuracy_evaluator.test_loader = self.test_loader
-        accuracy = accuracy_evaluator.evaluate()
-        return {'pred_y': y_pred, 'true_y': self.data['test']['y']}, accuracy
+        evaluations = accuracy_evaluator.evaluate()
+        return {'pred_y': y_pred, 'true_y': self.data['test']['y']}, evaluations

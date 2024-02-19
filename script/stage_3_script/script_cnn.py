@@ -1,5 +1,5 @@
 from code.stage_3_code.Dataset_Loader import Dataset_Loader
-from code.stage_3_code.Method_CNN import Method_CNN
+from code.stage_3_code.Method_CNN_MNIST import Method_CNN_MNIST
 from code.stage_3_code.Face_Net import Face_Net
 from code.stage_3_code.Result_Saver import Result_Saver
 from code.stage_3_code.Setting_Train_Test import Setting_Train_Test
@@ -21,7 +21,7 @@ if 1:
     data_obj.dataset_source_folder_path = '../../data/stage_3_data/'
     data_obj.dataset_source_file_name_train = 'MNIST'
 
-    method_obj = Method_CNN('convolutional neural network', '')
+    method_obj = Method_CNN_MNIST('convolutional neural network', '')
 
     result_obj = Result_Saver('saver', '')
     result_obj.result_destination_folder_path = '../../result/stage_3_result/CNN_'
