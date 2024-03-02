@@ -18,7 +18,7 @@ class Method_RNN(method, nn.Module):
     train_loader = None
     test_loader = None
     # it defines the max rounds to train the model
-    max_epoch = 15
+    max_epoch = 11
     # it defines the learning rate for gradient descent based optimizer for model learning
     learning_rate = 1e-3
     vocab = None
@@ -31,12 +31,12 @@ class Method_RNN(method, nn.Module):
         super(Method_RNN, self).__init__()
         self.vocab = {}
 
-        self.embedding_dim = 50  # Dimension of word embeddings
-        self.hidden_dim = 50  # Dimension of hidden state
-        self.num_layers = 3  # Number of recurrent layers
+        self.embedding_dim = 32  # Dimension of word embeddings
+        self.hidden_dim = 64  # Dimension of hidden state
+        self.num_layers = 2  # Number of recurrent layers
 
         self.embedding_layer = nn.Embedding(num_embeddings=133264, embedding_dim=self.embedding_dim)
-        self.rnn = nn.RNN(input_size=self.embedding_dim, hidden_size=self.hidden_dim, num_layers=self.num_layers, batch_first=True, nonlinearity="relu", dropout=0.2)
+        self.lstm = nn.LSTM(input_size=self.embedding_dim, hidden_size=self.hidden_dim, num_layers=self.num_layers, batch_first=True, dropout=0.1)
         self.linear = nn.Linear(self.hidden_dim, 2)
 
 
@@ -45,8 +45,8 @@ class Method_RNN(method, nn.Module):
 
     def forward(self, x):
         embeddings = self.embedding_layer(x)
-        output, hidden = self.rnn(embeddings, torch.randn(self.num_layers, len(x), self.hidden_dim))
-        return self.linear(output[:, -1])
+        output, (hidden, _) = self.lstm(embeddings)
+        return self.linear(hidden[-1])
 
     # backward error propagation will be implemented by pytorch automatically
     # so we don't need to define the error backpropagation function here

@@ -81,7 +81,7 @@ class Dataset_Loader(dataset):
 
         vocab = dict(vocab)
 
-        max_length = 25
+        max_length = 150
         X_train = self.pad_sequences(X_train, max_length)
         X_test= self.pad_sequences(X_test, max_length)
 
