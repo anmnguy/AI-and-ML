@@ -7,7 +7,7 @@ import numpy as np
 import torch
 from sklearn.metrics import accuracy_score, classification_report
 
-# ---- Recurrent Neural Network script ----
+# ---- Recurrent Neural Network script for generation ----
 if 1:
 
     # ---- parameter section -------------------------------
