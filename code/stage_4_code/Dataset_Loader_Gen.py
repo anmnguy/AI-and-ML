@@ -18,8 +18,7 @@ from code.base_class.dataset import dataset
 class Dataset_Loader(dataset):
     data = None
     dataset_source_folder_path = None
-    dataset_source_file_name_train = None
-    dataset_source_file_name_test = None
+    dataset_source_file_name = None
 
     def __init__(self, dName=None, dDescription=None):
         super().__init__(dName, dDescription)
