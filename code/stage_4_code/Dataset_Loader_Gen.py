@@ -22,6 +22,7 @@ class Dataset_Loader(dataset):
 
     def __init__(self, dName=None, dDescription=None):
         super().__init__(dName, dDescription)
+        self.n_tokens = 0
 
     def load_csv(self):
         data_path = os.path.join(self.dataset_source_folder_path, self.dataset_source_file_name)
@@ -34,7 +35,7 @@ class Dataset_Loader(dataset):
         table = str.maketrans('', '', string.punctuation)
         tokens = [w.translate(table) for w in tokens if w.isalpha()]
         return tokens
-
+    
     def build_vocab_and_get_sequences(self, jokes):
         tokenizer = get_tokenizer('basic_english')
 
